@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  confluence:
+    build: ./confluence
+    container_name: confluence
+    environment:
+      - TZ='Asia/Shanghai'
+      - JVM_MAXIMUM_MEMORY=2048m
+    restart: always
+    ports:
+      - '8070:8090'
+    volumes:
+      - ./data/confluence/var/:/var/atlassian/confluence/
+      - ./data/confluence/logs/:/opt/atlassian/confluence/logs/
+      - ./data/confluence/conf/:/opt/atlassian/confluence/conf/
+    depends_on:
+      - confluencedb
+
+  confluencedb:
+    image: postgres:9.6
+    container_name: confluencedb
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=confluence
+      - POSTGRES_DB=confluence
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    restart: always
